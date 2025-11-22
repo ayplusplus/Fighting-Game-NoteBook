@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+
+<style>
+    body {
+        font-family: Lato, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100vh;
+    }
+
+    .logout {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .logout a {
+        padding: 10px 20px;
+        background-color: #dc3545;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .logout a:hover {
+        background-color: #c82333;
+    }
+
+    .dashboard-container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .clickable-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-right: 2px solid #333;
+        background-color: #f5f5f5;
+        position: relative;
+        padding: 20px;
+    }
+
+    .clickable-section:last-child {
+        border-right: none;
+    }
+
+    .clickable-section:hover {
+        background-color: #e0e0e0;
+        transform: scale(1.02);
+    }
+
+    .clickable-section img {
+        width: 80%;
+        max-width: 400px;
+        height: auto;
+        object-fit: contain;
+        margin-bottom: 20px;
+    }
+
+    .character-dropdown-container {
+        width: 80%;
+        max-width: 300px;
+        margin-top: 20px;
+    }
+
+    .character-dropdown-container label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .character-dropdown-container select {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        background-color: white;
+        cursor: pointer;
+        font-family: Lato, sans-serif;
+    }
+
+    .character-dropdown-container select:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+
+    .go-button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .go-button:hover {
+        background-color: #45a049;
+    }
+
+    .flash-messages {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: 400px;
+    }
+
+    .alert {
+        padding: 12px 20px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+
+<body>
+    <div class="logout">
+        <a href="{{ url_for('logout') }}">logout</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="dashboard-container">
+        <!-- Mortal Kombat 1 Section -->
+        <div class="clickable-section">
+            <img src="{{ url_for('static', filename='mk1.png') }}" alt="Mortal Kombat">
+            <div class="character-dropdown-container">
+                <label for="mk1-select">Select Character:</label>
+                <select id="mk1-select">
+                    {% for character in game_characters['mk1'] %}
+                        <option value="{{ character }}">{{ character }}</option>
+                    {% endfor %}
+                </select>
+                <button class="go-button" onclick="goToNotebook('mk1')">Open Notebook</button>
+            </div>
+        </div>
+
+        <!-- Street Fighter 6 Section -->
+        <div class="clickable-section">
+            <img src="{{ url_for('static', filename='sf6.png') }}" alt="Street Fighter">
+            <div class="character-dropdown-container">
+                <label for="sf6-select">Select Character:</label>
+                <select id="sf6-select">
+                    {% for character in game_characters['sf6'] %}
+                        <option value="{{ character }}">{{ character }}</option>
+                    {% endfor %}
+                </select>
+                <button class="go-button" onclick="goToNotebook('sf6')">Open Notebook</button>
+            </div>
+        </div>
+
+        <!-- 2XKO Section -->
+        <div class="clickable-section">
+            <img src="{{ url_for('static', filename='2xko.png') }}" alt="2XKO">
+            <div class="character-dropdown-container">
+                <label for="2xko-select">Select Character:</label>
+                <select id="2xko-select">
+                    {% for character in game_characters['2xko'] %}
+                        <option value="{{ character }}">{{ character }}</option>
+                    {% endfor %}
+                </select>
+                <button class="go-button" onclick="goToNotebook('2xko')">Open Notebook</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToNotebook(game) {
+            // Get the selected character from the dropdown
+            const select = document.getElementById(game + '-select');
+            const character = select.value;
+
+            // Navigate to the notebook page with game and character
+            window.location.href = `/notebook/${game}/${encodeURIComponent(character)}`;
+        }
+    </script>
+</body>
+</html>
